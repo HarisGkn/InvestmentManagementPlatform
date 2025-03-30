@@ -1,23 +1,15 @@
 package com.example.InvestmentManagementPlatform.controller;
 
 import com.example.InvestmentManagementPlatform.dto.TransactionDto;
-import com.example.InvestmentManagementPlatform.model.Transaction;
-import com.example.InvestmentManagementPlatform.model.TransactionType;
 import com.example.InvestmentManagementPlatform.service.TransactionService;
 import com.example.InvestmentManagementPlatform.util.Mapper;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 

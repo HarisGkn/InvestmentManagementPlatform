@@ -9,6 +9,6 @@ public class PasswordChecker {
         String rawPassword = "password123";
         String hashedPassword = encoder.encode(rawPassword);
 
-        System.out.println("🆕 New Hashed Password: " + hashedPassword);
+        System.out.println("New Hashed Password: " + hashedPassword);
     }
 }

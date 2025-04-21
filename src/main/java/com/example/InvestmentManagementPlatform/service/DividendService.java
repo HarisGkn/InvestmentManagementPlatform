@@ -25,10 +25,11 @@ public class DividendService {
 
     @Transactional(readOnly = true)
     public List<Dividend> getAllDividends(String username, boolean isAdmin) {
+        // Return all dividends
         if (isAdmin) {
             return dividendRepository.findAll();
         }
-
+        // Else return only dividends for the current user
         return dividendRepository.findAll().stream()
                 .filter(div -> div.getInvestment()
                         .getPortfolio()
@@ -47,7 +48,7 @@ public class DividendService {
     public Dividend createDividend(Long investmentId, LocalDate paymentDate, BigDecimal amount) {
         Investment investment = investmentRepository.findById(investmentId)
                 .orElseThrow(() -> new RuntimeException("Investment not found with id " + investmentId));
-
+        // Create a new dividend associated with the investment
         Dividend dividend = new Dividend(investment, paymentDate, amount);
         return dividendRepository.save(dividend);
     }

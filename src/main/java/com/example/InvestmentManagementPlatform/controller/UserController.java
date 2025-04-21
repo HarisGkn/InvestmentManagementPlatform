@@ -36,12 +36,12 @@ public class UserController {
     })
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
 
-        String encodedPassword = passwordEncoder.encode(userRegistrationDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(userRegistrationDto.getPassword()); // Encode the raw password
 
         User newUser = new User(userRegistrationDto.getUsername(), encodedPassword, userRegistrationDto.getRole());
 
         User savedUser = userService.createUser(newUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Mapper.toUserDto(savedUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Mapper.toUserDto(savedUser)); // Return 201 Created with the saved user data
     }
 }

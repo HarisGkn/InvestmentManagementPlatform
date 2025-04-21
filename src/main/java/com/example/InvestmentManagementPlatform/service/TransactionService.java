@@ -30,6 +30,7 @@ public class TransactionService {
         if (isAdmin) {
             return transactionRepository.findAll();
         }
+        // For regular users, only include transactions from investments they own
         return transactionRepository.findAll().stream()
                 .filter(tx -> tx.getInvestment()
                         .getPortfolio()
@@ -49,6 +50,7 @@ public class TransactionService {
                                          TransactionType transactionType, BigDecimal amount, String username) {
         Investment investment = investmentRepository.findById(investmentId)
                 .orElseThrow(() -> new RuntimeException("Investment not found with id " + investmentId));
+        // Verify the investment belongs to the current user (prevent unauthorized access)
         if (!investment.getPortfolio().getUser().getUsername().equals(username)) {
             throw new RuntimeException("Unauthorized: You cannot add transactions to this investment.");
         }

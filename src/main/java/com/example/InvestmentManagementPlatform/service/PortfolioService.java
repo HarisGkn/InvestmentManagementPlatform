@@ -46,7 +46,7 @@ public class PortfolioService {
     public Optional<PortfolioDto> getPortfolioById(Long id, String username, boolean isAdmin) {
         return portfolioRepository.findById(id)
                 .filter(portfolio -> isAdmin || portfolio.getUser().getUsername().equals(username))
-                .filter(Portfolio::isActive)
+                .filter(Portfolio::isActive) // portfolio must be active
                 .map(Mapper::toPortfolioDto);
     }
 
@@ -58,7 +58,7 @@ public class PortfolioService {
         if (!user.isActive()) {
             throw new RuntimeException("Cannot create portfolio for an inactive user");
         }
-
+        // Use the current username as the portfolio owner
         Portfolio portfolio = new Portfolio(portfolioDto.getPortfolioName(), username, portfolioDto.getTotalValue(), user);
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         return Mapper.toPortfolioDto(savedPortfolio);
@@ -68,9 +68,11 @@ public class PortfolioService {
     @Transactional
     public PortfolioDto updatePortfolio(Long id, PortfolioDto portfolioDto, String username) {
         return portfolioRepository.findById(id).map(portfolio -> {
+            // Ensure the current user owns this portfolio
             if (!portfolio.getUser().getUsername().equals(username)) {
                 throw new RuntimeException("Unauthorized access to this portfolio");
             }
+            // Cannot update if the portfolio is inactive
             if (!portfolio.isActive()) {
                 throw new RuntimeException("Cannot update an inactive portfolio");
             }
@@ -86,6 +88,7 @@ public class PortfolioService {
     public void deactivatePortfolio(Long id, String username, boolean isAdmin) {
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found with id " + id));
+        // Only admin or the owner can deactivate this portfolio
         if (!isAdmin && !portfolio.getUser().getUsername().equals(username)) {
             throw new RuntimeException("Unauthorized access to deactivate this portfolio");
         }

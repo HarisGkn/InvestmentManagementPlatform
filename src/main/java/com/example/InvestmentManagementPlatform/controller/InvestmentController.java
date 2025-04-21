@@ -49,12 +49,12 @@ public class InvestmentController {
     public ResponseEntity<InvestmentDto> createInvestment(@Valid @RequestBody InvestmentDto investmentDto, Authentication authentication) {
         String username = authentication.getName();
         if (investmentDto.getPortfolioId() == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build(); // Portfolio ID is required in request
         }
 
         Portfolio portfolio = portfolioRepository.findById(investmentDto.getPortfolioId())
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-
+        // If the portfolio doesn't exist, a RuntimeException is thrown to trigger global error handling
         Investment investment = Mapper.toInvestmentEntity(investmentDto);
         investment.setPortfolio(portfolio);
         Investment createdInvestment = investmentService.createInvestment(investment, username);

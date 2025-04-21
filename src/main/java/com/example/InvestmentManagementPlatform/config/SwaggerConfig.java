@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
-
+// Sets up OpenAPI documentation with basic auth security
 @Configuration
 public class SwaggerConfig {
 

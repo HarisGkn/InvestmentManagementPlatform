@@ -40,6 +40,7 @@ public class Mapper {
     }
 
     public static PortfolioDto toPortfolioDto(Portfolio portfolio) {
+        // Collect all investment IDs from the portfolio's investments
         List<Long> investmentIds = (portfolio.getInvestments() != null)
                 ? portfolio.getInvestments().stream()
                 .map(Investment::getId)
@@ -102,6 +103,7 @@ public class Mapper {
     }
 
     public static UserRegistrationDto toUserRegistrationDto(User user) {
+        // Return a UserRegistrationDto with empty password (do not expose actual password)
         return new UserRegistrationDto(user.getUsername(), "", user.getRole(), user.isActive());
     }
 

@@ -56,6 +56,7 @@ class InvestmentAuditServiceTest {
         investment.setPortfolio(portfolio);
     }
 
+    // Should log and return an audit entry for a valid investment
     @Test
     void testLogInvestmentChange_Success() {
         when(investmentRepository.findById(10L)).thenReturn(Optional.of(investment));
@@ -75,6 +76,7 @@ class InvestmentAuditServiceTest {
         verify(auditRepository).save(any());
     }
 
+    // Should throw exception when logging change for non-existent investment
     @Test
     void testLogInvestmentChange_InvestmentNotFound() {
         when(investmentRepository.findById(999L)).thenReturn(Optional.empty());
@@ -83,6 +85,7 @@ class InvestmentAuditServiceTest {
                 investmentAuditService.logInvestmentChange(999L, "Type", BigDecimal.ONE, BigDecimal.TEN));
     }
 
+    // Should return all investment audit records
     @Test
     void testGetAllAudits() {
         InvestmentAudit audit = new InvestmentAudit(
@@ -96,6 +99,7 @@ class InvestmentAuditServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return audit entries for the specified user
     @Test
     void testGetAuditsForUser() {
         InvestmentAudit audit = new InvestmentAudit(
@@ -109,6 +113,7 @@ class InvestmentAuditServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return an empty list if the user has no audit entries
     @Test
     void testGetAuditsForUser_NoMatch() {
         InvestmentAudit audit = new InvestmentAudit(

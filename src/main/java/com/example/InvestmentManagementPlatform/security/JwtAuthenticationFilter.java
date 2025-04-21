@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userService;
     }
 
+    // Skip JWT filter for authentication, registration, and actuator endpoints
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
@@ -40,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
         try {
             String authorizationHeader = request.getHeader("Authorization");
+            // Ensure the Authorization header is present and Bearer token is provided
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
                 sendErrorResponse(response, "Missing or malformed Authorization header", HttpServletResponse.SC_FORBIDDEN);
                 return;

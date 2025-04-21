@@ -19,6 +19,7 @@ public class JwtUtil {
 
     public JwtUtil(@Value("${jwt.secret}") String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(Base64.getEncoder().encodeToString(secret.getBytes()));
+        // Decode the secret and create HMAC-SHA256 signing key
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -43,14 +44,18 @@ public class JwtUtil {
         }
     }
 
+    // Extract the username (subject) from the token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // Extract the expiration time from the token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    // Extract a specific claim from the token using a claims resolver
+    // Used in extractUsername and extractExpiration
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parserBuilder()
                 .setSigningKey(signingKey)
@@ -60,6 +65,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    // Check if the token's expiration date has passed
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }

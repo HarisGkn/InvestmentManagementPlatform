@@ -30,7 +30,7 @@ public class InvestmentAuditService {
                                                BigDecimal oldValue, BigDecimal newValue) {
         Investment investment = investmentRepository.findById(investmentId)
                 .orElseThrow(() -> new RuntimeException("Investment not found with id " + investmentId));
-
+        // Save a new audit entry with current timestamp and change details
         InvestmentAudit audit = new InvestmentAudit(
                 investment,
                 changeType,

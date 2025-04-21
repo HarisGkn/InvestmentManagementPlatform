@@ -55,6 +55,7 @@ class TransactionServiceTest {
         idField.set(investment, 1L);
     }
 
+    // Should create a new transaction for an existing investment and user
     @Test
     void testCreateTransaction_Success() {
         when(investmentRepository.findById(1L)).thenReturn(Optional.of(investment));
@@ -74,6 +75,7 @@ class TransactionServiceTest {
         assertEquals(TransactionType.BUY, result.getTransactionType());
     }
 
+    // Should throw exception when creating a transaction for non-existent investment
     @Test
     void testCreateTransaction_InvestmentNotFound() {
         when(investmentRepository.findById(1L)).thenReturn(Optional.empty());
@@ -82,6 +84,7 @@ class TransactionServiceTest {
                 transactionService.createTransaction(1L, LocalDate.now(), TransactionType.SELL, BigDecimal.TEN, "testuser"));
     }
 
+    // Should throw exception if a user tries to create a transaction for another user's investment
     @Test
     void testCreateTransaction_UnauthorizedUser() {
         when(investmentRepository.findById(1L)).thenReturn(Optional.of(investment));
@@ -90,6 +93,7 @@ class TransactionServiceTest {
                 transactionService.createTransaction(1L, LocalDate.now(), TransactionType.SELL, BigDecimal.TEN, "otheruser"));
     }
 
+    // Should return all transactions for an admin request
     @Test
     void testGetAllTransactions_Admin() {
         Transaction tx1 = new Transaction();
@@ -100,6 +104,7 @@ class TransactionServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return transactions only for the specified user
     @Test
     void testGetAllTransactions_User() {
         Transaction tx = new Transaction();
@@ -111,6 +116,7 @@ class TransactionServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return empty if user requests transactions they don't own
     @Test
     void testGetAllTransactions_UserFilteredOut() {
         Transaction tx = new Transaction();
@@ -122,6 +128,7 @@ class TransactionServiceTest {
         assertEquals(0, result.size());
     }
 
+    // Should retrieve transactions for a specific investment ID
     @Test
     void testGetTransactionsByInvestment() {
         Transaction tx = new Transaction();

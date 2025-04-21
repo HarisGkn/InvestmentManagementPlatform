@@ -30,17 +30,22 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
+    // Define the security rules for HTTP requests and apply JWT filter
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints for authentication and registration
                         .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/investments/**").authenticated()
+                        // Permit all access to health and metrics endpoints
                         .requestMatchers("/actuator/health", "/actuator/prometheus", "/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                // Use stateless session (no session will be created or used)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Add JWT authentication filter before username/password auth filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

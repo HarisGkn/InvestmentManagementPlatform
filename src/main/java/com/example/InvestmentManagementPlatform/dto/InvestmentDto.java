@@ -5,9 +5,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-/**
- * Data Transfer Object for Investment.
- */
 public class InvestmentDto {
 
     private final Long id;

@@ -33,7 +33,7 @@ CREATE TABLE investment (
     CONSTRAINT fk_investment_portfolio FOREIGN KEY (portfolio_id) REFERENCES portfolio(id) ON DELETE CASCADE
 );
 
--- Table for Transactions (Buy/Sell history)
+-- Table for Transactions
 CREATE TABLE transaction (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     investment_id BIGINT NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE transaction (
     CONSTRAINT fk_transaction_investment FOREIGN KEY (investment_id) REFERENCES investment(id) ON DELETE CASCADE
 );
 
--- Table for Dividends (Dividend Payments)
+-- Table for Dividends
 CREATE TABLE dividend (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     investment_id BIGINT NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE dividend (
     CONSTRAINT fk_dividend_investment FOREIGN KEY (investment_id) REFERENCES investment(id) ON DELETE CASCADE
 );
 
--- Table for Investment Audit (Tracks updates)
+-- Table for Investment Audit
 CREATE TABLE investment_audit (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     investment_id BIGINT NOT NULL,

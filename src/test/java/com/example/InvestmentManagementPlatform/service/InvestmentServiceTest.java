@@ -70,6 +70,7 @@ class InvestmentServiceTest {
         field.set(target, value);
     }
 
+    // Should return all investments when requested by admin
     @Test
     void testGetAllInvestments_Admin() {
         when(investmentRepository.findAll()).thenReturn(List.of(investment));
@@ -79,6 +80,7 @@ class InvestmentServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return only the user's investments when not admin
     @Test
     void testGetAllInvestments_User() {
         when(investmentRepository.findInvestmentsByUsername("testuser")).thenReturn(List.of(investment));
@@ -88,6 +90,7 @@ class InvestmentServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should retrieve an existing investment by its ID
     @Test
     void testGetInvestmentById_Found() {
         when(investmentRepository.findById(1L)).thenReturn(Optional.of(investment));
@@ -97,6 +100,7 @@ class InvestmentServiceTest {
         assertTrue(result.isPresent());
     }
 
+    // Should save new investment and create a buy transaction
     @Test
     void testCreateInvestment_Success() {
         when(portfolioRepository.findById(10L)).thenReturn(Optional.of(portfolio));
@@ -114,12 +118,14 @@ class InvestmentServiceTest {
         );
     }
 
+    // Should throw exception when creating an investment without a valid portfolio
     @Test
     void testCreateInvestment_InvalidPortfolio() {
         Investment invalid = new Investment();
         assertThrows(RuntimeException.class, () -> investmentService.createInvestment(invalid, "user"));
     }
 
+    // Should throw exception if the portfolio for the new investment does not exist
     @Test
     void testCreateInvestment_PortfolioNotFound() throws Exception {
         setId(investment.getPortfolio(), "id", 99L);
@@ -128,6 +134,7 @@ class InvestmentServiceTest {
         assertThrows(RuntimeException.class, () -> investmentService.createInvestment(investment, "testuser"));
     }
 
+    // Should throw exception if a user creates an investment in another user's portfolio
     @Test
     void testCreateInvestment_Unauthorized() {
         user.setUsername("notYou");
@@ -136,6 +143,7 @@ class InvestmentServiceTest {
         assertThrows(RuntimeException.class, () -> investmentService.createInvestment(investment, "testuser"));
     }
 
+    // Should allow admin to update an investment and log the change
     @Test
     void testUpdateInvestment_Success_Admin() {
         Investment updated = new Investment();
@@ -157,6 +165,7 @@ class InvestmentServiceTest {
         verify(investmentAuditService, atLeastOnce()).logInvestmentChange(any(), any(), any(), any());
     }
 
+    // Should throw exception if a user tries to update another user's investment
     @Test
     void testUpdateInvestment_Unauthorized() {
         user.setUsername("originalOwner");
@@ -171,6 +180,7 @@ class InvestmentServiceTest {
                 investmentService.updateInvestment(1L, updated, "otherUser", false));
     }
 
+    // Should throw exception if the investment to update is not found
     @Test
     void testUpdateInvestment_NotFound() {
         when(investmentRepository.findById(999L)).thenReturn(Optional.empty());
@@ -179,6 +189,7 @@ class InvestmentServiceTest {
                 investmentService.updateInvestment(999L, investment, "user", true));
     }
 
+    // Should deactivate an investment when called by admin
     @Test
     void testDeactivateInvestment_Admin() {
         when(investmentRepository.findById(1L)).thenReturn(Optional.of(investment));
@@ -189,6 +200,7 @@ class InvestmentServiceTest {
         assertFalse(investment.isActive());
     }
 
+    // Should throw exception if a user tries to deactivate another user's investment
     @Test
     void testDeactivateInvestment_Unauthorized() {
         user.setUsername("someoneElse");
@@ -199,6 +211,7 @@ class InvestmentServiceTest {
                 investmentService.deactivateInvestment(1L, "wrongUser", false));
     }
 
+    // Should throw exception if the investment to deactivate is not found
     @Test
     void testDeactivateInvestment_NotFound() {
         when(investmentRepository.findById(123L)).thenReturn(Optional.empty());

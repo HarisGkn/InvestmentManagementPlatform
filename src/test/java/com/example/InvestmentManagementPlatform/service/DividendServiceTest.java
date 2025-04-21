@@ -54,6 +54,7 @@ class DividendServiceTest {
         investment.setPortfolio(portfolio);
     }
 
+    // Should return all dividends for an admin user
     @Test
     void testGetAllDividends_asAdmin() {
         Dividend d1 = new Dividend();
@@ -64,6 +65,7 @@ class DividendServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return only the user's dividends when user is not admin
     @Test
     void testGetAllDividends_asUser_filtered() {
         Dividend dividend = new Dividend();
@@ -76,6 +78,7 @@ class DividendServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should return an empty list if no dividends belong to the user
     @Test
     void testGetAllDividends_asUser_noMatch() {
         user.setUsername("notme");
@@ -89,6 +92,7 @@ class DividendServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    // Should return dividends for a given investment ID
     @Test
     void testGetDividendsByInvestment() {
         Dividend d = new Dividend();
@@ -99,6 +103,7 @@ class DividendServiceTest {
         assertEquals(1, result.size());
     }
 
+    // Should create and return a new dividend when investment exists
     @Test
     void testCreateDividend_success() {
         when(investmentRepository.findById(100L)).thenReturn(Optional.of(investment));
@@ -113,6 +118,7 @@ class DividendServiceTest {
         verify(dividendRepository).save(any());
     }
 
+    // Should throw an exception if the investment is not found
     @Test
     void testCreateDividend_investmentNotFound() {
         when(investmentRepository.findById(999L)).thenReturn(Optional.empty());

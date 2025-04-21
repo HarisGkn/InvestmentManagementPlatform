@@ -31,6 +31,7 @@ class PortfolioServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // Should return all active portfolios for an admin user
     @Test
     void testGetAllPortfolios_asAdmin() {
         Portfolio portfolio = new Portfolio("My Portfolio", "owner1", BigDecimal.TEN, new User());
@@ -43,6 +44,7 @@ class PortfolioServiceTest {
         verify(portfolioRepository).findByActiveTrue();
     }
 
+    // Should return only active portfolios for the specified user
     @Test
     void testGetAllPortfolios_asUser() {
         Portfolio portfolio = new Portfolio("My Portfolio", "owner1", BigDecimal.TEN, new User());
@@ -55,6 +57,7 @@ class PortfolioServiceTest {
         verify(portfolioRepository).findByUser_UsernameAndActiveTrue("user1");
     }
 
+    // Should retrieve a portfolio by ID for an admin user
     @Test
     void testGetPortfolioById_asAdmin() {
         Portfolio portfolio = new Portfolio("Test", "owner", BigDecimal.ONE, new User());
@@ -66,6 +69,7 @@ class PortfolioServiceTest {
         assertTrue(result.isPresent());
     }
 
+    // Should return empty if non-owner user requests another user's portfolio
     @Test
     void testGetPortfolioById_asUser_unauthorized() {
         User user = new User();
@@ -79,6 +83,7 @@ class PortfolioServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    // Should create a new portfolio for an active user
     @Test
     void testCreatePortfolio_success() {
         User user = new User();
@@ -97,6 +102,7 @@ class PortfolioServiceTest {
         verify(portfolioRepository).save(any());
     }
 
+    // Should throw exception if the user is inactive
     @Test
     void testCreatePortfolio_inactiveUser() {
         User user = new User();
@@ -107,6 +113,7 @@ class PortfolioServiceTest {
         assertThrows(RuntimeException.class, () -> portfolioService.createPortfolio(dto, "charis"));
     }
 
+    // Should update an existing portfolio for the owner
     @Test
     void testUpdatePortfolio_success() {
         User user = new User();
@@ -125,6 +132,7 @@ class PortfolioServiceTest {
         assertEquals("New", result.getPortfolioName());
     }
 
+    // Should throw exception when updating a portfolio not owned by the user
     @Test
     void testUpdatePortfolio_unauthorized() {
         User user = new User();
@@ -140,6 +148,7 @@ class PortfolioServiceTest {
         assertThrows(RuntimeException.class, () -> portfolioService.updatePortfolio(1L, update, "charis"));
     }
 
+    // Should deactivate a portfolio when called by an admin
     @Test
     void testDeactivatePortfolio_asAdmin() {
         Portfolio portfolio = new Portfolio("Port", "admin", BigDecimal.ONE, new User());
@@ -151,6 +160,7 @@ class PortfolioServiceTest {
         verify(portfolioRepository).save(portfolio);
     }
 
+    // Should throw exception if a non-admin, non-owner attempts to deactivate a portfolio
     @Test
     void testDeactivatePortfolio_unauthorizedUser() {
         Portfolio portfolio = new Portfolio("Port", "owner", BigDecimal.ONE, new User());
@@ -159,6 +169,7 @@ class PortfolioServiceTest {
         assertThrows(RuntimeException.class, () -> portfolioService.deactivatePortfolio(1L, "charis", false));
     }
 
+    // Should find all portfolios belonging to a given owner
     @Test
     void testFindByOwner() {
         Portfolio portfolio = new Portfolio("Test", "charis", BigDecimal.TEN, new User());
@@ -170,27 +181,4 @@ class PortfolioServiceTest {
         assertEquals(1, result.size());
     }
 
-    @Test
-    void testFindByTotalValue() {
-        Portfolio portfolio = new Portfolio("Big", "owner", BigDecimal.valueOf(500), new User());
-        portfolio.setActive(true);
-        when(portfolioRepository.findByTotalValueGreaterThan(BigDecimal.valueOf(100)))
-                .thenReturn(List.of(portfolio));
-
-        List<PortfolioDto> result = portfolioService.findPortfoliosByTotalValueGreaterThan(BigDecimal.valueOf(100));
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void testFindByNameContaining() {
-        Portfolio portfolio = new Portfolio("Growth Fund", "owner", BigDecimal.ONE, new User());
-        portfolio.setActive(true);
-        when(portfolioRepository.findByPortfolioNameContaining("Growth"))
-                .thenReturn(List.of(portfolio));
-
-        List<PortfolioDto> result = portfolioService.findPortfoliosByNameContaining("Growth");
-
-        assertEquals(1, result.size());
-    }
 }

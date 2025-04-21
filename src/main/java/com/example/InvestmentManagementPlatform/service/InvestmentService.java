@@ -38,6 +38,8 @@ public class InvestmentService {
 
     @Transactional(readOnly = true)
     public List<Investment> getAllInvestments(String username, boolean isAdmin) {
+        // Admins get all investments
+        // regular users only their own
         return isAdmin
                 ? investmentRepository.findAll()
                 : investmentRepository.findInvestmentsByUsername(username);
@@ -55,12 +57,14 @@ public class InvestmentService {
         }
         Portfolio portfolio = portfolioRepository.findById(investment.getPortfolio().getId())
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        // Ensure the current user owns the portfolio and the owner is active
         if (!portfolio.getUser().getUsername().equals(username) || !portfolio.getUser().isActive()) {
             throw new RuntimeException("Unauthorized: You cannot add investments to this portfolio.");
         }
-        investment.setActive(true);
+        investment.setActive(true); // new investments are active by default
         investment.setPortfolio(portfolio);
         Investment savedInvestment = investmentRepository.save(investment);
+        // Record the initial buy transaction for this investment
         transactionService.createTransaction(
                 savedInvestment.getId(),
                 savedInvestment.getPurchaseDate(),
@@ -74,6 +78,7 @@ public class InvestmentService {
     @Transactional
     public Investment updateInvestment(Long id, Investment investmentDetails, String username, boolean isAdmin) {
         return investmentRepository.findById(id).map(existing -> {
+            // If user is not admin, ensure they own the investment before updating
             if (!isAdmin && !existing.getPortfolio().getUser().getUsername().equals(username)) {
                 throw new RuntimeException("Unauthorized: You cannot modify this investment.");
             }
@@ -140,7 +145,7 @@ public class InvestmentService {
     public void deactivateInvestment(Long id, String username, boolean isAdmin) {
         Investment investment = investmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Investment not found with id " + id));
-
+        // Only the owner or an admin can deactivate the investment
         if (!isAdmin && !investment.getPortfolio().getUser().getUsername().equals(username)) {
             throw new RuntimeException("Unauthorized: You do not own this investment.");
         }

@@ -19,5 +19,5 @@ public interface InvestmentRepository extends JpaRepository<Investment, Long> {
     List<Investment> findByPurchaseDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT i FROM Investment i JOIN i.portfolio p JOIN p.user u WHERE u.username = :username AND u.active = true")
-    List<Investment> findInvestmentsByUsername(@Param("username") String username);
+    List<Investment> findInvestmentsByUsername(@Param("username") String username); // Find investments for an active user with the given username
 }

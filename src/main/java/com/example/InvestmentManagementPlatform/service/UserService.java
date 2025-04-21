@@ -36,7 +36,7 @@ public class UserService implements UserDetailsService {
     public void deactivateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        // Mark the user as inactive (soft delete)
         user.setActive(false);
         userRepository.save(user);
     }
@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .filter(User::isActive)
+                .filter(User::isActive) // Only load if user is active
                 .map(user -> org.springframework.security.core.userdetails.User
                         .withUsername(user.getUsername())
                         .password(user.getPassword())
